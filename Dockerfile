@@ -1,5 +1,5 @@
 # Base image
-FROM node:18-slim
+FROM node:20-slim
 
 # Metadata labels
 LABEL maintainer="Britehouse Mobility DevOps <devops@britehousemobility.com>"
@@ -14,24 +14,26 @@ ENV command=${command:-"release"}
 ENV server_url=${server_url:-"https://appcenter.ms"}
 ENV target_version=${target_version:-"1.0.0"}
 
-ENV NODE_ENV=production
+ENV NODE_ENV=development
 
 # Create a non-root user
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     ca-certificates \
-    npm \
     && rm -rf /var/lib/apt/lists/* \
-    && groupadd -r codepush && useradd -r -g codepush codepush
+    && groupadd -r codepush && useradd -r -g codepush codepush \
+    && mkdir -p /data
 
 # Set up volume for data persistence
 VOLUME ["/data"]
 WORKDIR /opt/
 
 # Clone and set up code-push-server in one layer to reduce image size
-RUN git clone --depth 1 https://github.com/microsoft/code-push-server.git \
-    && cd /opt/code-push-server \
-    && npm install \ 
+RUN git clone --depth 1 https://github.com/microsoft/code-push-server.git
+
+WORKDIR /opt/code-push-server/cli
+
+RUN npm install --include=dev \ 
     && npm run build \
     && npm install -g \
     && chown -R codepush:codepush /opt/code-push-server \
@@ -39,7 +41,6 @@ RUN git clone --depth 1 https://github.com/microsoft/code-push-server.git \
 
 # Switch to the non-root user
 USER codepush
-WORKDIR /opt/code-push-server
 
 # Runtime command
 ENTRYPOINT ["sh", "-c"]
