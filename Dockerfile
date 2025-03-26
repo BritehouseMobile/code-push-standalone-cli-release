@@ -43,4 +43,4 @@ WORKDIR /opt/code-push-server
 
 # Runtime command
 ENTRYPOINT ["sh", "-c"]
-CMD ["code-push-standalone login ${server_url} --accessKey ${access_key} && code-push-standalone release ${app_name} /data ${target_version}"]
+CMD ["code-push-standalone login ${server_url} --accessKey ${access_key} && code-push-standalone ${release} ${app_name} /data ${target_version}"]
