@@ -35,13 +35,8 @@ WORKDIR /opt/code-push-server/cli
 
 RUN npm install --include=dev \ 
     && npm run build \
-    && npm install -g \
-    && chown -R codepush:codepush /opt/code-push-server \
-    && chown -R codepush:codepush /data
-
-# Switch to the non-root user
-USER codepush
+    && npm install -g
 
 # Runtime command
 ENTRYPOINT ["sh", "-c"]
-CMD ["code-push-standalone login ${server_url} --accessKey ${access_key} && code-push-standalone ${release} ${app_name} /data ${target_version}"]
+CMD ["code-push-standalone login --accessKey ${access_key} ${server_url} && code-push-standalone ${command} ${app_name} /data ${target_version}"]
