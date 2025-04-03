@@ -11,9 +11,9 @@ LABEL org.opencontainers.image.source="https://github.com/microsoft/code-push-se
 ENV access_key=${access_key:-"your-access-key"}
 ENV app_name=${app_name:-"your-app"}
 ENV command=${command:-"release"}
+ENV deployment_name=${deployment_name:-"Staging"}
 ENV server_url=${server_url:-"https://appcenter.ms"}
 ENV target_version=${target_version:-"1.0.0"}
-
 ENV NODE_ENV=development
 
 # Create a non-root user
@@ -39,4 +39,4 @@ RUN npm install --include=dev \
 
 # Runtime command
 ENTRYPOINT ["sh", "-c"]
-CMD ["code-push-standalone login --accessKey ${access_key} ${server_url} && code-push-standalone ${command} ${app_name} /data ${target_version}"]
+CMD ["code-push-standalone login --accessKey ${access_key} ${server_url} && code-push-standalone ${command} ${app_name} /data ${target_version} -d ${deployment_name}"]
